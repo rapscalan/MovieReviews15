@@ -51,4 +51,40 @@ describe('app routes', () => {
           });
         });
     });
+
+    it('fails to login a user with a bad email', async() => {
+      await User.create({
+        email: 'test@test.com',
+        password: 'password'
+      });
+
+      return request(app)
+        .post('/api/v1/auth/login')
+        .send({ email: 'badEmail@notgood.io', password: 'password' })
+        .then(res => {
+          expect(res.status).toEqual(401);
+          expect(res.body).toEqual({
+            status: 401,
+            message: 'Invalid Email/Password'
+          });
+        });
+    });
+
+    it('fails to login a user with a bad password', async() => {
+      await User.create({
+        email: 'test@test.com',
+        password: 'password'
+      });
+
+      return request(app)
+        .post('/api/v1/auth/login')
+        .send({ email: 'test@test.com', password: 'notcorrect' })
+        .then(res => {
+          expect(res.status).toEqual(401);
+          expect(res.body).toEqual({
+            status: 401,
+            message: 'Invalid Email/Password'
+          });
+        });
+    });
 });
